@@ -127,3 +127,16 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Dataset
+wikiart/* 
+PopArt.zip
+PopArt/*
+portrait/*
+square/*
+landscape/*
+art.zip
+
+# vscode and mac stuffs
+.vscode
+.DS_Store
