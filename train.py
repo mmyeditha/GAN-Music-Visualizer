@@ -1,4 +1,6 @@
 from model import *
+from train_loader import *
+import pdb
 import time
 
 train_batch_size = 32 #@param
@@ -11,16 +13,22 @@ steps_per_eval = 500 #@param
 max_train_steps = 5000 #@param
 batches_for_eval_metrics = 100 #@param
 
+running_loss = 0
+loss_hist = []
+
+print('Imported everything')
+
 gan_estimator = tfgan.estimator.GANEstimator(
     generator_fn=unconditional_generator,
     discriminator_fn=unconditional_discriminator,
     generator_loss_fn=tfgan.losses.wasserstein_generator_loss,
     discriminator_loss_fn=tfgan.losses.wasserstein_discriminator_loss,
-    params={'batch_size': train_batch_size, 'noise_dims': noise_dimensions},
+    params={'batch_size': train_batch_size, 'noise_dims': noise_dimensions, 'gan_loss':running_loss},
     generator_optimizer=gen_opt,
     discriminator_optimizer=tf.train.AdamOptimizer(discriminator_lr, 0.5),
-    get_eval_metric_ops_fn=get_eval_metric_ops_fn)
-
+    get_eval_metric_ops_fn=get_eval_metric_ops_fn,
+    )
+print('Initialized gan estimator')
 # demo training routine for mnist, have to adapt to my network/data
 cur_step = 0
 start_time = time.time()
@@ -29,11 +37,13 @@ while cur_step < max_train_steps:
 
     start = time.time()
     gan_estimator.train(input_fn, max_steps=next_step)
+    print(f'Loss: {running_loss}')
+    loss_hist.append(running_loss)
     steps_taken = next_step - cur_step
     time_taken = time.time() - start
     print('Time since start: %.2f min' % ((time.time() - start_time) / 60.0))
     print('Trained from step %i to %i in %.2f steps / sec' % (
         cur_step, next_step, steps_taken / time_taken))
     cur_step = next_step
-
+    pdb.set_trace()
     # add metrics of generator/discriminator loss as well
