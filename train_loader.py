@@ -32,7 +32,7 @@ def input_fn(mode, params):
     if just_noise:
         return noise_ds
 
-    images_ds = tf.data.Dataset.from_generator(item_generator, args=[split])
+    images_ds = tf.data.Dataset.from_generator(item_generator, args=[split], output_types=tf.float32)
     if shuffle:
         images_ds = images_ds.shuffle(
             buffer_size=10000, reshuffle_each_iteration=True)
